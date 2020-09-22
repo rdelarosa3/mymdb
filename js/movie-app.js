@@ -2,7 +2,7 @@
 const top10Movies = [];
 
 const getMovie =(movie) => {
-    const url =`http://www.omdbapi.com/?t=${movie}&apikey=${OMDbkey}&`
+    const url =`http://www.omdbapi.com/?t=${movie}&apikey=${OMDbKey}&`
     return fetch(url)
         .then(response => response.json())
         .then(movieData => {
@@ -23,7 +23,7 @@ getMovie("avengers").then((data)=>{
         plot: data.Plot,
         language: data.Language,
         poster: data.Plot,
-        rating: data.Rating,
+        rating: data.Ratings,
         director: data.Director,
         actors: data.Actors,
     }
@@ -71,13 +71,58 @@ const addMovie = (movie)=>{
             return Promise.reject(response);
         })
         .then( (data)=> {
-            console.log("success",data);
+            console.log("success");
         })
         .catch( (error) =>{
             console.warn("error", error);
         });
 }
 
+const createMovieCard = (movie) => {
+
+
+    $('#database-list').append(`
+     <div id="movie.id" class="card" style="width: 18rem;">
+      <button class="updatebtn">Update</button>
+      <button class="deletebtn">Delete</button>
+      <div class="card-header">${movie.title}</div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">Year: ${movie.year}</li>
+        <li class="list-group-item">Rated: ${movie.rated}</li>
+        <li class="list-group-item">Released: ${movie.released}</li>
+        <li class="list-group-item">Runtime: ${movie.runtime}</li>
+        <li class="list-group-item">Genre: ${movie.genre}</li>
+        <li class="list-group-item">Director: ${movie.director}</li>
+        <li class="list-group-item">Actors: ${movie.actors}</li>
+        <li class="list-group-item">Plot: ${movie.plot}</li>
+        <li class="list-group-item">Language: ${movie.language}</li>
+        <li class="list-group-item">Poster: ${movie.poster}</li>
+        <li class="list-group-item">Ratings: ${movie.ratings}</li>
+      </ul>
+    </div>
+    `);
+}
+
+const getDatabase =() => {
+    let url = 'https://copper-cypress-bakery.glitch.me/movies';
+    fetch(url)
+        .then((response)=> {
+            if (response.ok) {
+                return response.json();
+            }
+            return Promise.reject(response);
+        })
+        .then( (data)=> {
+            console.log("success");
+            for(let movie of data){
+                createMovieCard(movie);
+            }
+        })
+        .catch( (error) =>{
+            console.warn("error", error);
+        });
+}
+getDatabase();
 
 
 // const {Title, Year, Rated, Released, Runtime, Genre, Director, Actors, Plot, Language, Poster, imdbRating, imdbID} = movieData;
