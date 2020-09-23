@@ -3,10 +3,10 @@ const seedList = [
     "avengers",
     "the pest",
     "nightmare before christmas",
-    "earnest scared stupid",
+    "space jam",
     "the lord of the rings",
     "star wars",
-    "IT",
+    "jingle all the way",
     "extraction",
     "iron man",
     "tenet"
@@ -31,12 +31,12 @@ const seedData = ()=>{
                 year:  data.Year,
                 rated: data.Rated,
                 released: data.Released,
-                runtime: data.Runtime,
-                genre: data.Genre,
+                runtime: parseInt(data.Runtime),
+                genre: data.Genre.split(", "),
                 plot: data.Plot,
-                language: data.Language,
-                poster: data.Plot,
-                rating: data.Ratings,
+                language: data.Language.split(", "),
+                poster: data.Poster,
+                rating: parseFloat(data.Ratings[0].Value.split("/")[0]),
                 director: data.Director,
                 actors: data.Actors,
             }
@@ -107,7 +107,7 @@ const createMovieCard = (movie) => {
                 <li class="list-group-item">Plot: ${movie.plot}</li>
                 <li class="list-group-item">Language: ${movie.language}</li>
                 <li class="list-group-item">Poster: ${movie.poster}</li>
-                <li class="list-group-item">Ratings: ${movie.ratings}</li>
+                <li class="list-group-item">Ratings: ${movie.rating}</li>
               </ul>
         </div>
     `);
@@ -162,12 +162,102 @@ deleteAll = () =>{
         });
 }
 
+// form creation
+const loadCreateForm = ()=>{
+    return fetch("_form.html")
+        .then((response)=> {
+            if (response.ok) {
+                return response.text();
+            }
+            return Promise.reject(response);
+        })
+        .catch( (error) =>{
+            console.warn("error", error);
+        });
+}
+
+
+const yearsSelect = ()=>{
+    let current = (new Date()).getFullYear();
+    for (current; current>= 1900; current-- ){
+        $("#year").append(`<option value="${current}">${current}</option>`)
+    }
+}
+
+const genreSelect = ()=>{
+    const genres = [
+        "Action",
+        "Adventure",
+        "Comedy",
+        "Crime",
+        "Drama",
+        "Family",
+        "Fantasy",
+        "Historical",
+        "Historical fiction",
+        "Horror",
+        "Magical realism",
+        "Mystery",
+        "Paranoid fiction",
+        "Philosophical",
+        "Political",
+        "Romance",
+        "Saga",
+        "Satire",
+        "Science fiction",
+        "Social",
+        "Speculative",
+        "Thriller",
+        "Urban",
+        "Western",
+        "Animation",
+        "Video game",
+        "Music"
+    ];
+    for(let genre of genres) {
+        $("#genre").append(`<option value="${genre}">${genre}</option>`)
+    }
+}
+
+const languageSelect = ()=>{
+    const langs = [
+        "English",
+        "Spanish",
+        "Mandarin",
+        "Arabic",
+        "Hindi",
+        "Russian",
+        "Japanese",
+        "Bengali",
+        "Indonesian"
+    ]
+    for(let lang of langs){
+        $("#language").append(`<option value="${lang}">${lang}</option>`)
+    }
+}
+
+const setSelectValues = ()=>{
+    loadCreateForm().then( html=>{
+        $("#modalForm").html(html);
+        yearsSelect();
+        genreSelect();
+        languageSelect();
+    })
+}
+
+$("#addMovieBtn").click(function (){
+    setSelectValues();
+    $("#formModal").modal("toggle");
+})
 
 $(document).on('click','.deletebtn',function(){
     let id = $(this).parent()[0].id;
     deleteMovie(id);
 });
 
+$(document).on("change","#rating",function () {
+     $("#currentRating").html($("#rating").val());
+})
 
 // finished delete movie funtions
 // working on ASYNC for refresh div
