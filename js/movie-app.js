@@ -113,8 +113,17 @@ const createMovieCard = (movie) => {
     `);
 }
 
+const loader = `<div class="loader">
+                <div class="d-flex justify-content-center">
+                  <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </div>
+               </div>`
+
 const getDatabase =() => {
     let url = 'https://copper-cypress-bakery.glitch.me/movies';
+    $("#database-list").html(loader);
     fetch(url)
         .then((response)=> {
             if (response.ok) {
@@ -124,6 +133,7 @@ const getDatabase =() => {
         })
         .then( (data)=> {
             console.log("success");
+            $("#database-list").html("")
             for(let movie of data){
                 createMovieCard(movie);
             }
