@@ -1,4 +1,7 @@
+const baseurl = 'https://copper-cypress-bakery.glitch.me/movies';
 
+/** DATABASE SEED-EMPTY FUNCTIONS **/
+// SEED DATA TO GET FROM OMDB FOR DATABASE
 const seedList = [
     "avengers",
     "the pest",
@@ -12,6 +15,7 @@ const seedList = [
     "tenet"
 ];
 
+// MAKE REQUEST FROM OMDB API
 const getOmdb =(movie) => {
     const url =`http://www.omdbapi.com/?t=${movie}&apikey=${OMDbkey}&`
     return fetch(url)
@@ -22,6 +26,7 @@ const getOmdb =(movie) => {
         .catch(error => console.log(error));
 }
 
+// SEED DATA WHEN NEEDED
 const seedData = ()=>{
     for(let movie of seedList){
         getOmdb(movie).then((data)=>{
@@ -40,42 +45,38 @@ const seedData = ()=>{
                 director: data.Director,
                 actors: data.Actors,
             }
-            addMovie(newMovie);
+            createMovie(newMovie);
         });
     } 
 }
 
+// DELETES ALL THE MOVIES FROM OUR DATABASE
+const deleteAll = () =>{
+    fetch(baseurl)
+        .then((response)=> {
+            if (response.ok) {
+                return response.json();
+            }
+            return Promise.reject(response);
+        })
+        .then( (data)=> {
+            console.log("deleting data",data);
+            for (let movie of data){
+                deleteMovie(movie.id);
+            }
+            getDatabase();
+        })
+        .catch( (error) =>{
+            console.warn("error", error);
+        });
+}
+/** END DATABASE SEED-EMPTY COMMANDS **/
 
-
-$("#createMovie").submit(function (event){
-    event.preventDefault();
-    let newMovie = {
-        title: $("#title").val(),
-        year:  $("#year").val(),
-        rated: $("#rated").val(),
-        released: $("#released").val(),
-        runtime: $("#runtime").val(),
-        genre: $("#genre").val(),
-        plot: $("#plot").val(),
-        language:$("#language").val(),
-        poster: $("#poster").val(),
-        rating: $("#rating").val(),
-        director: $("#director").val(),
-        actors: $("#actors").val(),
-    }
-    addMovie(newMovie);
-});
-
-const addMovie = (movie)=>{
-    let url = 'https://copper-cypress-bakery.glitch.me/movies';
-    let options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(movie),
-    };
-    fetch(url, options)
+/** GET MOVIES FROM DATABASE REQUESTS**/
+// SERVER REQUEST TO GET ALL MOVIES FROM DATABASE
+const getDatabase =() => {
+    $("#database-list").html(loader);
+    fetch(baseurl)
         .then((response)=> {
             if (response.ok) {
                 return response.json();
@@ -84,15 +85,42 @@ const addMovie = (movie)=>{
         })
         .then( (data)=> {
             console.log("success");
-            getDatabase();
+            $("#database-list").html("")
+            for(let movie of data){
+                createMovieCard(movie);
+            }
         })
         .catch( (error) =>{
             console.warn("error", error);
         });
 }
 
+// SERVER REQUEST TO GET SPECIFIC MOVIE FROM DATABASE
+const getMovie = (id) => {
+    return fetch(baseurl)
+        .then((response)=> {
+            if (response.ok) {
+                return response.json();
+            }
+            return Promise.reject(response);
+        })
+        .then( (data)=> {
+            for (let movie of data) {
+                if (movie.id == id) {
+                    console.log(movie);
+                    return movie;
+                }
+            }
+            console.log("success");
+        })
+        .catch( (error) =>{
+            console.warn("error", error);
+        });
+}
+/** END GET MOVIES REQUEST **/
 
-
+/** HELPER FUNCTIONS **/
+// DYNAMIC MOVIE CARD CREATED FROM MOVIE DATA
 const createMovieCard = (movie) => {
     $('#database-list').append(`
         <div id="${movie.id}" class="card" style="width: 18rem;">
@@ -115,74 +143,9 @@ const createMovieCard = (movie) => {
         </div>
     `);
 }
-
-const loader = `<div class="loader">
-                <div class="d-flex justify-content-center">
-                  <div class="spinner-border" role="status">
-                    <span class="sr-only">Loading...</span>
-                  </div>
-                </div>
-               </div>`
-
-const getDatabase =() => {
-    let url = 'https://copper-cypress-bakery.glitch.me/movies';
-    $("#database-list").html(loader);
-    fetch(url)
-        .then((response)=> {
-            if (response.ok) {
-                return response.json();
-            }
-            return Promise.reject(response);
-        })
-        .then( (data)=> {
-            console.log("success");
-            $("#database-list").html("")
-            for(let movie of data){
-                createMovieCard(movie);
-            }
-        })
-        .catch( (error) =>{
-            console.warn("error", error);
-        });
-}
-getDatabase();
-
-const getMovie = (id) => {
-    let url = 'https://copper-cypress-bakery.glitch.me/movies';
-    return fetch(url)
-        .then((response)=> {
-            if (response.ok) {
-                return response.json();
-            }
-            return Promise.reject(response);
-        })
-        .then( (data)=> {
-            for (let movie of data) {
-                if (movie.id == id) {
-                    console.log(movie);
-                    return movie;
-                }
-            }
-            console.log("success");
-        })
-        .catch( (error) =>{
-            console.warn("error", error);
-        });
-}
-
-
-const deleteMovie = (id)=>{
-    let url = `https://copper-cypress-bakery.glitch.me/movies/${id}`;
-    fetch(url,{
-        method: "DELETE"
-    })
-        .then(()=> getDatabase());
-
-}
-
-const updateMovie =(id) => {
-    let url = `https://copper-cypress-bakery.glitch.me/movies/${id}`;
-    let currentMovie = {
+// CREATES A MOVIE OBJECT BASED ON FORM INPUTS
+const setMovieObj = ()=>{
+    return {
         title: $("#title").val(),
         year:  $("#year").val(),
         rated: $("#rated").val(),
@@ -194,14 +157,64 @@ const updateMovie =(id) => {
         poster: $("#poster").val(),
         rating: $("#rating").val(),
         director: $("#director").val(),
-        actors: $("#actors").val(),
+        actors: $("#actors").val()
     }
-    let options = {
+}
+
+// LOADING SCREEN SPINNER
+const loader = `
+    <div class="loader">
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
+`
+/** END HELPER FUNCTIONS**/
+
+/** CRUD - CREATE, READ, UPDATE, DELETE **/
+// CRUD CREATE A MOVIE ON DATABASE
+const createMovie = (movie)=>{
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(movie),
+    };
+    fetch(baseurl, options)
+        .then((response)=> {
+            if (response.ok) {
+                return response.json();
+            }
+            return Promise.reject(response);
+        })
+        .then( ()=> {
+            console.log("success");
+            getDatabase();
+        })
+        .catch( (error) =>{
+            console.warn("error", error);
+        });
+}
+
+// CRUD DELETE MOVIE FROM DATABASE
+const deleteMovie = (id)=>{
+    let url = `${baseurl}/${id}`;
+    fetch(url,{method: "DELETE"}).then(()=> getDatabase());
+}
+
+// CRUD UPDATE MOVIE ON DATABASE
+const updateMovie =(id) => {
+    const url = `${baseurl}/${id}`;
+    const movie = setMovieObj()
+    const options = {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(currentMovie),
+        body: JSON.stringify(movie),
     };
     fetch(url, options)
         .then((response)=> {
@@ -219,28 +232,11 @@ const updateMovie =(id) => {
             console.warn("error", error);
         });
 }
+/** END CRUD **/
 
-const deleteAll = () =>{
-    fetch('https://copper-cypress-bakery.glitch.me/movies')
-        .then((response)=> {
-            if (response.ok) {
-                return response.json();
-            }
-            return Promise.reject(response);
-        })
-        .then( (data)=> {
-            console.log("deleting data",data);
-            for (let movie of data){
-                deleteMovie(movie.id);
-            }
-            getDatabase();
-        })
-        .catch( (error) =>{
-            console.warn("error", error);
-        });
-}
 
-// form creation
+/** FORM SPECIFIC VARS AND FUNCTIONS **/
+// FORM: RENDER THE MOVIE FORM FROM CALLBACK
 const loadCreateForm = ()=>{
     return fetch("_form.html")
         .then((response)=> {
@@ -254,7 +250,7 @@ const loadCreateForm = ()=>{
         });
 }
 
-
+// FORM: CREATES THE SELECT VALUES FOR YEARS
 const yearsSelect = ()=>{
     let current = (new Date()).getFullYear();
     for (current; current>= 1900; current-- ){
@@ -262,6 +258,7 @@ const yearsSelect = ()=>{
     }
 }
 
+// FORM: CREATES THE SELECT VALUES FOR GENRE
 const genreSelect = ()=>{
     const genres = [
         "Action",
@@ -297,6 +294,7 @@ const genreSelect = ()=>{
     }
 }
 
+// FORM: CREATES THE SELECT VALUES FOR LANGUAGES
 const languageSelect = ()=>{
     const langs = [
         "English",
@@ -313,7 +311,12 @@ const languageSelect = ()=>{
         $("#language").append(`<option value="${lang}">${lang}</option>`)
     }
 }
+// FORM: SHOW CURRENT VALUE OF RATING SLIDER
+$(document).on("change","#rating",function () {
+    $("#currentRating").html($("#rating").val());
+})
 
+// FORM: SET THE INPUT SELECT VALUES FOR THE FORM
 const setSelectValues = ()=>{
     loadCreateForm().then( html=>{
         $("#modalForm").html(html);
@@ -322,30 +325,48 @@ const setSelectValues = ()=>{
         languageSelect();
     })
 }
+// FORM: UPDATES THE EDIT FORM VALUES TO THOSE OF THE CURRENT MOVIE
+const updateFormValues =(movie) => {
+    $('input[name="currId"]').attr('value',movie.id);
+    $("#title").val(movie.title)
+    $("#year").val(movie.year)
+    $("#rated").val(movie.rated)
+    $("#released").val(movie.released)
+    $("#runtime").val(movie.runtime)
+    $("#genre").val(movie.genre)
+    $("#plot").val(movie.plot)
+    $("#language").val(movie.language)
+    $("#poster").val(movie.poster)
+    $("#rating").val(movie.rating)
+    $("#director").val(movie.director)
+    $("#actors").val(movie.actors)
+}
+/** END FORM **/
 
+
+/** ONCLICK EVENTS **/
+// NEW MOVIE BUTTON ON CLICK DISPLAY THE CREATE MOVIE FORM MODAL
 $("#addMovieBtn").click(function (){
     setSelectValues();
     $("#formModal").modal("toggle");
 })
 
+// DELETE MOVIE BUTTON ON CLICK DISPLAY CONFIRM DELETE
 $(document).on('click','.deletebtn',function(){
     const id = $(this).parent()[0].id;
     const deleteTitle = $(this).siblings("div").html();
     $("#deleteMovieModalLabel").html( deleteTitle);
     $("#deleteMovieModal").modal("toggle");
+    // IF USER CLICKS CONFIRM DELETE, DELETE MOVIE
     $(".confirm-delete").click(function () {
         deleteMovie(id);
         $("#deleteMovieModal").modal("toggle");
     })
 });
 
-$(document).on("change","#rating",function () {
-     $("#currentRating").html($("#rating").val());
-})
-
-
+// EDIT MOVIE BUTTON ON CLICK DISPLAY THE UPDATE MOVIE FORM
 $(document).on('click','.editbtn',function() {
-    let id = $(this).parent()[0].id;
+    const id = $(this).parent()[0].id;
     setSelectValues();
     getMovie(id).then(movie => {
         updateFormValues(movie);
@@ -354,25 +375,24 @@ $(document).on('click','.editbtn',function() {
     });
     $("#formModal").modal("toggle");
 });
+/** END ONCLICK **/
 
-const updateFormValues =(movie) => {
-        $('input[name="currId"]').attr('value',movie.id);
-        $("#title").val(movie.title)
-        $("#year").val(movie.year)
-        $("#rated").val(movie.rated)
-        $("#released").val(movie.released)
-        $("#runtime").val(movie.runtime)
-        $("#genre").val(movie.genre)
-        $("#plot").val(movie.plot)
-        $("#language").val(movie.language)
-        $("#poster").val(movie.poster)
-        $("#rating").val(movie.rating)
-        $("#director").val(movie.director)
-        $("#actors").val(movie.actors)
-}
 
+/** ONSUBMIT EVENTS **/
+// CREATE MOVIE FORM ON SUBMIT
+$(document).on("submit","#createMovie",function (event){
+    event.preventDefault();
+    const movie = setMovieObj();
+    createMovie(movie);
+    $("#formModal").modal("toggle");
+});
+
+// EDIT MOVIE FORM ON SUBIT
 $(document).on("submit","#updateMovie",function (event){
     event.preventDefault();
-    let id = $('input[name="currId"]').val();
+    const id = $('input[name="currId"]').val();
     updateMovie(id);
 });
+/** END ONSUBMIT **/
+
+getDatabase();
