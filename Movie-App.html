@@ -8,6 +8,11 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
+    <style>
+        body{
+            background-color: #0f181d;
+        }
+    </style>
     <title>A &  R Movies</title>
 </head>
 <body>
@@ -30,6 +35,24 @@
                     </button>
                 </div>
                 <div id="modalForm" class="modal-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DeleteMovie modal -->
+    <div id="deleteMovieModal" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteMovieModalLabel"></h5>
+                </div>
+                <div class="modal-body">
+                    Delete this Movie From Database?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Dismiss</button>
+                    <button type="button" class="btn btn-danger confirm-delete">Delete</button>
+                </div>
             </div>
         </div>
     </div>

@@ -84,6 +84,7 @@ const addMovie = (movie)=>{
         })
         .then( (data)=> {
             console.log("success");
+            getDatabase();
         })
         .catch( (error) =>{
             console.warn("error", error);
@@ -175,17 +176,32 @@ const deleteMovie = (id)=>{
     fetch(url,{
         method: "DELETE"
     })
+        .then(()=> getDatabase());
+
 }
 
 const updateMovie =(id) => {
     let url = `https://copper-cypress-bakery.glitch.me/movies/${id}`;
-    let movie = {};
+    let currentMovie = {
+        title: $("#title").val(),
+        year:  $("#year").val(),
+        rated: $("#rated").val(),
+        released: $("#released").val(),
+        runtime: $("#runtime").val(),
+        genre: $("#genre").val(),
+        plot: $("#plot").val(),
+        language:$("#language").val(),
+        poster: $("#poster").val(),
+        rating: $("#rating").val(),
+        director: $("#director").val(),
+        actors: $("#actors").val(),
+    }
     let options = {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(movie),
+        body: JSON.stringify(currentMovie),
     };
     fetch(url, options)
         .then((response)=> {
@@ -196,6 +212,8 @@ const updateMovie =(id) => {
         })
         .then( (data)=> {
             console.log("success");
+            $("#formModal").modal("toggle");
+            getDatabase();
         })
         .catch( (error) =>{
             console.warn("error", error);
@@ -215,6 +233,7 @@ const deleteAll = () =>{
             for (let movie of data){
                 deleteMovie(movie.id);
             }
+            getDatabase();
         })
         .catch( (error) =>{
             console.warn("error", error);
@@ -310,8 +329,14 @@ $("#addMovieBtn").click(function (){
 })
 
 $(document).on('click','.deletebtn',function(){
-    let id = $(this).parent()[0].id;
-    deleteMovie(id);
+    const id = $(this).parent()[0].id;
+    const deleteTitle = $(this).siblings("div").html();
+    $("#deleteMovieModalLabel").html( deleteTitle);
+    $("#deleteMovieModal").modal("toggle");
+    $(".confirm-delete").click(function () {
+        deleteMovie(id);
+        $("#deleteMovieModal").modal("toggle");
+    })
 });
 
 $(document).on("change","#rating",function () {
@@ -323,14 +348,15 @@ $(document).on('click','.editbtn',function() {
     let id = $(this).parent()[0].id;
     setSelectValues();
     getMovie(id).then(movie => {
-    updateFormValues(movie);
+        updateFormValues(movie);
         $('#createMovie').attr("id","updateMovie");
+        $('#formModalLongTitle').html("Update Movie");
     });
-    // updateMovie(id);
     $("#formModal").modal("toggle");
 });
 
 const updateFormValues =(movie) => {
+        $('input[name="currId"]').attr('value',movie.id);
         $("#title").val(movie.title)
         $("#year").val(movie.year)
         $("#rated").val(movie.rated)
@@ -347,7 +373,6 @@ const updateFormValues =(movie) => {
 
 $(document).on("submit","#updateMovie",function (event){
     event.preventDefault();
-    updateMovie();
+    let id = $('input[name="currId"]').val();
+    updateMovie(id);
 });
-// finished delete movie funtions
-// working on ASYNC for refresh div
