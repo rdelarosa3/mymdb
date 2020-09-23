@@ -3,16 +3,40 @@ const baseurl = 'https://copper-cypress-bakery.glitch.me/movies';
 /** DATABASE SEED-EMPTY FUNCTIONS **/
 // SEED DATA TO GET FROM OMDB FOR DATABASE
 const seedList = [
-    "avengers",
-    "the pest",
-    "nightmare before christmas",
-    "space jam",
-    "the lord of the rings",
-    "star wars",
-    "jingle all the way",
-    "extraction",
-    "iron man",
-    "tenet"
+    "CITIZEN KANE ",
+    "CASABLANCA",
+    "THE GODFATHER",
+    "GONE WITH THE WIND",
+    "WIZARD OF OZ",
+    "THE GRADUATE",
+    "PSYCHO",
+    "nightmare on elm street",
+    "jason",
+    "kill bill",
+    "king kong",
+    "taxi driver",
+    "the conjuring",
+    "due date",
+    "the hangover",
+    "jaws",
+    "clockwork orange",
+    "hot tub time machine",
+    "back to the future",
+    "the sandlot",
+    "pulp fiction",
+    "forrest gump",
+    "amercian pie",
+    "fight club",
+    "donnie darko",
+    "mr. deeds",
+    "hot chick",
+    "ip man",
+    "the girl next door",
+    "goodfellas",
+    "rocky",
+    "fanasia",
+    "network",
+    "apocalypse now"
 ];
 
 // MAKE REQUEST FROM OMDB API
@@ -121,7 +145,7 @@ const getMovie = (id) => {
 
 /** HELPER FUNCTIONS **/
 // DYNAMIC MOVIE CARD CREATED FROM MOVIE DATA
-const createMovieCard = (movie) => {
+const MovieCard = (movie) => {
     $('#database-list').append(`
         <div id="${movie.id}" class="card" style="width: 18rem;">
             <button class="editbtn">Edit</button>
@@ -140,6 +164,33 @@ const createMovieCard = (movie) => {
                 <li class="list-group-item">Poster: ${movie.poster}</li>
                 <li class="list-group-item">Ratings: ${movie.rating}</li>
               </ul>
+        </div>
+    `);
+}
+
+const createMovieCard = (movie) =>{
+    $('#database-list').append(`
+        <div id="${movie.id}" class="card" style="width: 18rem;">
+            <div class="card-header">${movie.title}</div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Year: ${movie.year}</li>
+                    <li class="list-group-item">Rated: ${movie.rated}</li>
+                    <li class="list-group-item">Released: ${movie.released}</li>
+                    <li class="list-group-item">Runtime: ${movie.runtime}</li>
+                    <li class="list-group-item">Genre: ${movie.genre}</li>
+                    <li class="list-group-item">Director: ${movie.director}</li>
+                    <li class="list-group-item">Actors: ${movie.actors}</li>
+                    <li class="list-group-item">Plot: ${movie.plot}</li>
+                    <li class="list-group-item">Language: ${movie.language}</li>
+                    <li class="list-group-item">Poster: ${movie.poster}</li>
+                    <li class="list-group-item">Ratings: ${movie.rating}</li>
+                </ul>
+            </div>
+            <div class="card-footer">
+                <button class="badge badge-pill badge-dark editbtn">Edit</button>
+                <button class="badge badge-pill badge-dark deletebtn">Delete</button>
+            </div>
         </div>
     `);
 }
@@ -366,7 +417,7 @@ $(document).on('click','.deletebtn',function(){
 
 // EDIT MOVIE BUTTON ON CLICK DISPLAY THE UPDATE MOVIE FORM
 $(document).on('click','.editbtn',function() {
-    const id = $(this).parent()[0].id;
+    const id = $(this).parent().parent()[0].id;
     setSelectValues();
     getMovie(id).then(movie => {
         updateFormValues(movie);
