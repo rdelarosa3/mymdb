@@ -90,10 +90,12 @@ const addMovie = (movie)=>{
         });
 }
 
+
+
 const createMovieCard = (movie) => {
     $('#database-list').append(`
         <div id="${movie.id}" class="card" style="width: 18rem;">
-            <button class="updatebtn">Update</button>
+            <button class="editbtn">Edit</button>
             <button class="deletebtn">Delete</button>
             <div class="card-header">${movie.title}</div>
               <ul class="list-group list-group-flush">
@@ -144,16 +146,63 @@ const getDatabase =() => {
 }
 getDatabase();
 
+const getMovie = (id) => {
+    let url = 'https://copper-cypress-bakery.glitch.me/movies';
+    return fetch(url)
+        .then((response)=> {
+            if (response.ok) {
+                return response.json();
+            }
+            return Promise.reject(response);
+        })
+        .then( (data)=> {
+            for (let movie of data) {
+                if (movie.id == id) {
+                    console.log(movie);
+                    return movie;
+                }
+            }
+            console.log("success");
+        })
+        .catch( (error) =>{
+            console.warn("error", error);
+        });
+}
 
 
-deleteMovie = (id)=>{
+const deleteMovie = (id)=>{
     let url = `https://copper-cypress-bakery.glitch.me/movies/${id}`;
     fetch(url,{
         method: "DELETE"
     })
 }
 
-deleteAll = () =>{
+const updateMovie =(id) => {
+    let url = `https://copper-cypress-bakery.glitch.me/movies/${id}`;
+    let movie = {};
+    let options = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(movie),
+    };
+    fetch(url, options)
+        .then((response)=> {
+            if (response.ok) {
+                return response.json();
+            }
+            return Promise.reject(response);
+        })
+        .then( (data)=> {
+            console.log("success");
+        })
+        .catch( (error) =>{
+            console.warn("error", error);
+        });
+}
+
+const deleteAll = () =>{
     fetch('https://copper-cypress-bakery.glitch.me/movies')
         .then((response)=> {
             if (response.ok) {
@@ -269,5 +318,36 @@ $(document).on("change","#rating",function () {
      $("#currentRating").html($("#rating").val());
 })
 
+
+$(document).on('click','.editbtn',function() {
+    let id = $(this).parent()[0].id;
+    setSelectValues();
+    getMovie(id).then(movie => {
+    updateFormValues(movie);
+        $('#createMovie').attr("id","updateMovie");
+    });
+    // updateMovie(id);
+    $("#formModal").modal("toggle");
+});
+
+const updateFormValues =(movie) => {
+        $("#title").val(movie.title)
+        $("#year").val(movie.year)
+        $("#rated").val(movie.rated)
+        $("#released").val(movie.released)
+        $("#runtime").val(movie.runtime)
+        $("#genre").val(movie.genre)
+        $("#plot").val(movie.plot)
+        $("#language").val(movie.language)
+        $("#poster").val(movie.poster)
+        $("#rating").val(movie.rating)
+        $("#director").val(movie.director)
+        $("#actors").val(movie.actors)
+}
+
+$(document).on("submit","#updateMovie",function (event){
+    event.preventDefault();
+    updateMovie();
+});
 // finished delete movie funtions
 // working on ASYNC for refresh div
