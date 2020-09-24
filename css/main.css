@@ -42,3 +42,15 @@ body{
     background-color: #102848f2;
     color: snow;
 }
+
+.list-group-item {
+    background-color: transparent;
+    border-bottom-color: #4d688d;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+}
+
+
+
+

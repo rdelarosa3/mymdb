@@ -147,14 +147,17 @@ const getMovie = (id) => {
 // DYNAMIC MOVIE CARD CREATED FROM MOVIE DATA
 const createMovieCard = (movie) =>{
     $('#database-list').append(`
-        <div id="${movie.id}" class="card shadow-lg ">
+        <div id="${movie.id}" class="card menu-view shadow-lg ">
             <img class="card-img-top" src="${movie.poster}" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">${movie.title}</h5>
-                <p class="card-text">
+                <p class="card-text card-plot">
                     ${ movie.plot.length <= 136 ? movie.plot : movie.plot.slice(0,136)+"..." }
                 </p>
-                <div>
+                <p class="card-text card-plot-expanded d-none">
+                    ${ movie.plot }
+                </p>
+                <div class="sub-content">
                     <ul class="list-inline">
                         <li class="list-inline-item movie-ratings">
                            <i class="fas fa-star"></i> <span class="rating-stars">${(movie.rating/2).toFixed(1)}</span> 
@@ -163,13 +166,17 @@ const createMovieCard = (movie) =>{
                         <li class="list-inline-item sub-info">${movie.year}</li>
                         <li class="list-inline-item sub-info"><span class="badge badge-dark">${movie.rated}</span></li>
                     </ul>
-                    <ul>
-                        <li class="d-none">Released: ${movie.released}</li>
-                        <li class="d-none">Genre: ${movie.genre}</li>
-                        <li class="d-none">Director: ${movie.director}</li>
-                        <li class="d-none">Actors: ${movie.actors}</li>
-                        <li class="d-none">Language: ${movie.language}</li>
-                    </ul>
+                    <div class="hidden-list list-group">
+                        <div class="d-none list-group-item"><h5>Released:</h5><span class="sub-info"> ${movie.released}</span></div>
+                        <hr>
+                        <div class="d-none list-group-item"><h5>Genre:</h5><span class="sub-info"> ${movie.genre}</span></div>
+                        <hr>
+                        <div class="d-none list-group-item"><h5>Director:</h5><span class="sub-info"> ${movie.director}</span></div>
+                        <hr>
+                        <div class="d-none list-group-item"><h5>Actors:</h5><span class="sub-info"> ${movie.actors}</span></div>
+                        <hr>
+                        <div class="d-none list-group-item"><h5>Language:</h5><span class="sub-info"> ${movie.language}</span></div>                
+                    </div>
                 </div>   
             </div>
             <div class="card-footer">
@@ -424,6 +431,17 @@ $(document).on('click','.editbtn',function() {
     });
     $("#formModal").modal("toggle");
 });
+
+//EXPANDS MODAL INFORMATION
+$(document).on('click', '.menu-view', function () {
+    let info = $(this).html();
+    $('#expandedContent').html(info);
+    $('#expandedModal').modal("toggle");
+    $('#expandedContent').children(".card-body").children(".sub-content").children(".hidden-list").children().toggleClass("d-none");
+    $('#expandedContent').children(".card-body").children(".card-plot").toggleClass("d-none");
+    $('#expandedContent').children(".card-body").children(".card-plot-expanded").toggleClass("d-none")
+})
+
 /** END ONCLICK **/
 
 
