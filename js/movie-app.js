@@ -435,11 +435,12 @@ $(document).on('click','.editbtn',function() {
 //EXPANDS MODAL INFORMATION
 $(document).on('click', '.menu-view', function () {
     let info = $(this).html();
-    $('#expandedContent').html(info);
+    let expandedContent = $('#expandedContent');
+    expandedContent.html(info);
+    expandedContent.children(".card-body").children(".sub-content").children(".hidden-list").children().toggleClass("d-none");
+    expandedContent.children(".card-body").children(".card-plot").toggleClass("d-none");
+    expandedContent.children(".card-body").children(".card-plot-expanded").toggleClass("d-none");
     $('#expandedModal').modal("toggle");
-    $('#expandedContent').children(".card-body").children(".sub-content").children(".hidden-list").children().toggleClass("d-none");
-    $('#expandedContent').children(".card-body").children(".card-plot").toggleClass("d-none");
-    $('#expandedContent').children(".card-body").children(".card-plot-expanded").toggleClass("d-none")
 })
 
 /** END ONCLICK **/
@@ -490,9 +491,22 @@ const movieSearch = (movieTitle)=>{
 }
 
 
-movieSearch("gi").then((movies)=>{
-    $("#database-list").html("")
-    for(let movie of movies){
-        createMovieCard(movie);
-    }
+
+
+$("#searchField").on("keyup",function () {
+    movieSearch($("#searchField").val()).then((movies)=>{
+        $("#database-list").html("")
+        for(let movie of movies){
+            createMovieCard(movie);
+        }
+    })
+})
+$("#searchForm").on("submit",function (event) {
+    event.preventDefault();
+    movieSearch($("#searchField").val()).then((movies)=>{
+        $("#database-list").html("")
+        for(let movie of movies){
+            createMovieCard(movie);
+        }
+    })
 })
