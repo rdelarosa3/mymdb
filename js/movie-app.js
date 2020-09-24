@@ -489,9 +489,10 @@ $("#searchField").on("keyup",function () {
 })
 /** END ONSUBMIT **/
 
+/** SEARCH FEATURE SECTION **/
 // SEARCH DATABASE
-const movieSearch = (movieTitle)=>{
-    $("#database-list").html(loader)
+const movieSearch = (searchInput)=>{
+    $("#database-list").html(loader);
     return fetch(baseurl)
         .then((response)=> {
             if (response.ok) {
@@ -501,8 +502,23 @@ const movieSearch = (movieTitle)=>{
         })
         .then( (data)=> {
             let movies = data.filter((movie)=> {
-                if (movie.title.toLowerCase().includes(movieTitle.toLowerCase())) {
-                    return movie;
+                if ( $("#radioTitle").is(":checked")) {
+                    if (movie.title.toLowerCase().includes(searchInput.toLowerCase())) {
+                        return movie;
+                    }
+                }
+                if ( $("#radioGenre").is(":checked")){
+                    for (let g of movie.genre){
+                        if (g.toLowerCase().includes(searchInput.toLowerCase())) {
+                            return movie;
+                        }
+                    }
+                }
+                if ($("#radioRating").is(":checked")){
+                    searchInput = $("#ratingSearchInput").val();
+                    if((movie.rating/2) >= parseFloat(searchInput) ){
+                        return movie;
+                    }
                 }
             })
             console.log("success");
@@ -512,5 +528,21 @@ const movieSearch = (movieTitle)=>{
             console.warn("error", error);
         });
 }
+
+// SWAP SEARCH INPUT BASED ON RADIO BUTTON
+$("#radioRating").click(function () {
+    if($("#ratingSearchInput").hasClass("d-none")){
+        $("#ratingSearchInput, #searchField").toggleClass("d-none");
+    }
+    
+})
+// SWAP SEARCH INPUT BASED ON RADIO BUTTON
+$("#radioTitle, #radioGenre").click(function () {
+    if($("#searchField").hasClass("d-none")){
+        $("#ratingSearchInput, #searchField").toggleClass("d-none");
+    }
+
+})
+/** END SEARCH FEATURE **/
 
 getDatabase();

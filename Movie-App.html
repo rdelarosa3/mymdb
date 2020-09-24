@@ -39,6 +39,16 @@
                         <span id="searchBarPre" class="input-group-text shadow"></span>
                     </div>
                     <input type="text" class="form-control"  id="searchField" name="searchField" placeholder="search database">
+
+                    <!-- SELECT RATING SEARCH-->
+                    <select class="form-control d-none" id="ratingSearchInput">
+                        <option value="0">0+</option>
+                        <option value="1">1+</option>
+                        <option value="2">2+</option>
+                        <option value="3">3+</option>
+                        <option value="4">4+</option>
+                        <option value="5">5</option>
+                    </select>
                     <div class="input-group-append">
                         <button id="search" type="submit" class="input-group-text btn text-primary shadow">
                             <i class="fa fa-search p-0"></i>
@@ -47,6 +57,20 @@
                 </div>
             </div>
         </form>
+        <div class="text-white text-center mt-2">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radioTitle" value="title" checked>
+                <label class="form-check-label" for="radioTitle">Title</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radioGenre" value="genre">
+                <label class="form-check-label" for="radioGenre">Genre</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radioRating" value="rating">
+                <label class="form-check-label" for="radioRating">Rating</label>
+            </div>
+        </div>
     </div>
     <!-- display movie database-->
     <div id="database-list" class="row justify-content-center"></div>
