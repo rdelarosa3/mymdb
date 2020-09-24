@@ -1,0 +1,44 @@
+body{
+    background-color: #0f181d;
+}
+.card{
+    background-color: #0f181d!important;
+    color: #fdfdfd;
+    border: black solid 1px;
+}
+.rating-stars{
+    color: #00a8e1;
+}
+.fa-star{
+    color: orange;
+}
+.sub-info{
+    color: #798698;
+}
+.bg-dark{
+    background-color:#1b2430!important;
+}
+
+#search {
+    border-top-right-radius: 32px !important;
+    border-bottom-right-radius: 32px !important;
+    background-color: #fff
+}
+#searchBarPre {
+    border-top-left-radius: 32px !important;
+    border-bottom-left-radius: 32px !important;
+    background-color: #fff
+}
+#searchField{
+    border-left: hidden!important;
+}
+@media only screen and (min-width: 613px){
+    .card{
+        max-width: 18rem!important;
+    }
+}
+
+.modal-content {
+    background-color: #102848f2;
+    color: snow;
+}
