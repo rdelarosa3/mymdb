@@ -434,7 +434,9 @@ $(document).on('click','.editbtn',function() {
         $('#createMovie').attr("id","updateMovie");
         $('#formModalLongTitle').html("Update Movie");
     });
-    $("#formModal").modal("toggle");
+    setTimeout(()=>{
+        $("#formModal").modal("toggle");
+    },200);
 });
 
 //EXPANDS MODAL INFORMATION
