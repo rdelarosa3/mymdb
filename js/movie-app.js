@@ -147,7 +147,7 @@ const getMovie = (id) => {
 // DYNAMIC MOVIE CARD CREATED FROM MOVIE DATA
 const createMovieCard = (movie) =>{
     $('#database-list').append(`
-        <div id="${movie.id}" class="card menu-view shadow-lg ">
+        <div class="card menu-view shadow-lg ">
             <img class="card-img-top" src="${movie.poster}" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">${movie.title}</h5>
@@ -176,13 +176,13 @@ const createMovieCard = (movie) =>{
                         <div class="list-group-item"><h5>Actors:</h5><span class="sub-info"> ${movie.actors}</span></div>
                         <hr>
                         <div class="list-group-item"><h5>Language:</h5><span class="sub-info"> ${movie.language}</span></div>                
+                        <div id="${movie.id}" class="list-group-item">
+                            <button class="badge badge-pill badge-dark editbtn">Edit</button>
+                            <button class="badge badge-pill badge-dark deletebtn">Delete</button>
+                        </div>
                     </div>
                 </div>   
-            </div>
-            <div class="card-footer">
-                <button class="badge badge-pill badge-dark editbtn">Edit</button>
-                <button class="badge badge-pill badge-dark deletebtn">Delete</button>
-            </div>
+            </div> 
         </div>
     `);
 }
@@ -381,18 +381,18 @@ const setSelectValues = ()=>{
 // FORM: UPDATES THE EDIT FORM VALUES TO THOSE OF THE CURRENT MOVIE
 const updateFormValues =(movie) => {
     $('input[name="currId"]').attr('value',movie.id);
-    $("#title").val(movie.title)
-    $("#year").val(movie.year)
-    $("#rated").val(movie.rated)
-    $("#released").val(movie.released)
-    $("#runtime").val(movie.runtime)
-    $("#genre").val(movie.genre)
-    $("#plot").val(movie.plot)
-    $("#language").val(movie.language)
-    $("#poster").val(movie.poster)
-    $("#rating").val(movie.rating)
-    $("#director").val(movie.director)
-    $("#actors").val(movie.actors)
+    $("#title").val(movie.title);
+    $("#year").val(movie.year);
+    $("#rated").val(movie.rated);
+    $("#released").val(movie.released);
+    $("#runtime").val(movie.runtime);
+    $("#genre").val(movie.genre);
+    $("#plot").val(movie.plot);
+    $("#language").val(movie.language);
+    $("#poster").val(movie.poster);
+    $("#rating").val(movie.rating);
+    $("#director").val(movie.director);
+    $("#actors").val(movie.actors);
 }
 /** END FORM **/
 
@@ -401,6 +401,7 @@ const updateFormValues =(movie) => {
 // NEW MOVIE BUTTON ON CLICK DISPLAY THE CREATE MOVIE FORM MODAL
 $("#addMovieBtn").click(function (){
     setSelectValues();
+    $('#formModalLongTitle').html("Add Movie");
     $("#formModal").modal("toggle");
 })
 
@@ -409,7 +410,9 @@ $("#addMovieBtn").click(function (){
 
 // DELETE MOVIE BUTTON ON CLICK DISPLAY CONFIRM DELETE
 $(document).on('click','.deletebtn',function(){
-    const id = $(this).parent().parent()[0].id;
+    $("#expandedModal").modal("toggle");
+    const id = $(this).parent()[0].id;
+    console.log(id)
     const deleteTitle = $(this).parent().siblings(".card-body").children(".card-title");
     $("#deleteMovieModalLabel").html( deleteTitle);
     $("#deleteMovieModal").modal("toggle");
@@ -422,7 +425,9 @@ $(document).on('click','.deletebtn',function(){
 
 // EDIT MOVIE BUTTON ON CLICK DISPLAY THE UPDATE MOVIE FORM
 $(document).on('click','.editbtn',function() {
-    const id = $(this).parent().parent()[0].id;
+    $("#expandedModal").modal("toggle");
+    const id = $(this).parent()[0].id;
+    console.log(id)
     setSelectValues();
     getMovie(id).then(movie => {
         updateFormValues(movie);
@@ -461,12 +466,28 @@ $(document).on("submit","#updateMovie",function (event){
     const id = $('input[name="currId"]').val();
     updateMovie(id);
 });
+// SEARCH FORM ON SUBMIT
+$("#searchForm").on("submit",function (event) {
+    event.preventDefault();
+    movieSearch($("#searchField").val()).then((movies)=>{
+        $("#database-list").html("")
+        for(let movie of movies){
+            createMovieCard(movie);
+        }
+    })
+})
+// SEARCH FORM SUBMITS ON KEYUP
+$("#searchField").on("keyup",function () {
+    movieSearch($("#searchField").val()).then((movies)=>{
+        $("#database-list").html("")
+        for(let movie of movies){
+            createMovieCard(movie);
+        }
+    })
+})
 /** END ONSUBMIT **/
 
-getDatabase();
-
-
-// SEARCH DB
+// SEARCH DATABASE
 const movieSearch = (movieTitle)=>{
     $("#database-list").html(loader)
     return fetch(baseurl)
@@ -490,23 +511,4 @@ const movieSearch = (movieTitle)=>{
         });
 }
 
-
-
-
-$("#searchField").on("keyup",function () {
-    movieSearch($("#searchField").val()).then((movies)=>{
-        $("#database-list").html("")
-        for(let movie of movies){
-            createMovieCard(movie);
-        }
-    })
-})
-$("#searchForm").on("submit",function (event) {
-    event.preventDefault();
-    movieSearch($("#searchField").val()).then((movies)=>{
-        $("#database-list").html("")
-        for(let movie of movies){
-            createMovieCard(movie);
-        }
-    })
-})
+getDatabase();
