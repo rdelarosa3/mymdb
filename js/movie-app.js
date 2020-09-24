@@ -166,16 +166,16 @@ const createMovieCard = (movie) =>{
                         <li class="list-inline-item sub-info">${movie.year}</li>
                         <li class="list-inline-item sub-info"><span class="badge badge-dark">${movie.rated}</span></li>
                     </ul>
-                    <div class="hidden-list list-group">
-                        <div class="d-none list-group-item"><h5>Released:</h5><span class="sub-info"> ${movie.released}</span></div>
+                    <div class="hidden-list list-group d-none">
+                        <div class="list-group-item"><h5>Released:</h5><span class="sub-info"> ${movie.released}</span></div>
                         <hr>
-                        <div class="d-none list-group-item"><h5>Genre:</h5><span class="sub-info"> ${movie.genre}</span></div>
+                        <div class="list-group-item"><h5>Genre:</h5><span class="sub-info"> ${movie.genre}</span></div>
                         <hr>
-                        <div class="d-none list-group-item"><h5>Director:</h5><span class="sub-info"> ${movie.director}</span></div>
+                        <div class="list-group-item"><h5>Director:</h5><span class="sub-info"> ${movie.director}</span></div>
                         <hr>
-                        <div class="d-none list-group-item"><h5>Actors:</h5><span class="sub-info"> ${movie.actors}</span></div>
+                        <div class="list-group-item"><h5>Actors:</h5><span class="sub-info"> ${movie.actors}</span></div>
                         <hr>
-                        <div class="d-none list-group-item"><h5>Language:</h5><span class="sub-info"> ${movie.language}</span></div>                
+                        <div class="list-group-item"><h5>Language:</h5><span class="sub-info"> ${movie.language}</span></div>                
                     </div>
                 </div>   
             </div>
@@ -435,11 +435,12 @@ $(document).on('click','.editbtn',function() {
 //EXPANDS MODAL INFORMATION
 $(document).on('click', '.menu-view', function () {
     let info = $(this).html();
-    $('#expandedContent').html(info);
+    let expandedContent = $('#expandedContent');
+    expandedContent.html(info);
+    expandedContent.children(".card-body").children(".sub-content").children(".hidden-list").toggleClass("d-none");
+    expandedContent.children(".card-body").children(".card-plot").toggleClass("d-none");
+    expandedContent.children(".card-body").children(".card-plot-expanded").toggleClass("d-none");
     $('#expandedModal').modal("toggle");
-    $('#expandedContent').children(".card-body").children(".sub-content").children(".hidden-list").children().toggleClass("d-none");
-    $('#expandedContent').children(".card-body").children(".card-plot").toggleClass("d-none");
-    $('#expandedContent').children(".card-body").children(".card-plot-expanded").toggleClass("d-none")
 })
 
 /** END ONCLICK **/
@@ -463,3 +464,49 @@ $(document).on("submit","#updateMovie",function (event){
 /** END ONSUBMIT **/
 
 getDatabase();
+
+
+// SEARCH DB
+const movieSearch = (movieTitle)=>{
+    $("#database-list").html(loader)
+    return fetch(baseurl)
+        .then((response)=> {
+            if (response.ok) {
+                return response.json();
+            }
+            return Promise.reject(response);
+        })
+        .then( (data)=> {
+            let movies = data.filter((movie)=> {
+                if (movie.title.toLowerCase().includes(movieTitle.toLowerCase())) {
+                    return movie;
+                }
+            })
+            console.log("success");
+            return movies;
+        })
+        .catch( (error) =>{
+            console.warn("error", error);
+        });
+}
+
+
+
+
+$("#searchField").on("keyup",function () {
+    movieSearch($("#searchField").val()).then((movies)=>{
+        $("#database-list").html("")
+        for(let movie of movies){
+            createMovieCard(movie);
+        }
+    })
+})
+$("#searchForm").on("submit",function (event) {
+    event.preventDefault();
+    movieSearch($("#searchField").val()).then((movies)=>{
+        $("#database-list").html("")
+        for(let movie of movies){
+            createMovieCard(movie);
+        }
+    })
+})
