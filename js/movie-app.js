@@ -445,3 +445,36 @@ $(document).on("submit","#updateMovie",function (event){
 /** END ONSUBMIT **/
 
 getDatabase();
+
+
+// SEARCH DB
+const movieSearch = (movieTitle)=>{
+    $("#database-list").html(loader)
+    return fetch(baseurl)
+        .then((response)=> {
+            if (response.ok) {
+                return response.json();
+            }
+            return Promise.reject(response);
+        })
+        .then( (data)=> {
+            let movies = data.filter((movie)=> {
+                if (movie.title.toLowerCase().includes(movieTitle.toLowerCase())) {
+                    return movie;
+                }
+            })
+            console.log("success");
+            return movies;
+        })
+        .catch( (error) =>{
+            console.warn("error", error);
+        });
+}
+
+
+movieSearch("gi").then((movies)=>{
+    $("#database-list").html("")
+    for(let movie of movies){
+        createMovieCard(movie);
+    }
+})
