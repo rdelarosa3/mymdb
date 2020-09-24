@@ -1,5 +1,5 @@
 const baseurl = 'https://copper-cypress-bakery.glitch.me/movies';
-
+let localMovies = [];
 /** DATABASE SEED-EMPTY FUNCTIONS **/
 // SEED DATA TO GET FROM OMDB FOR DATABASE
 const seedList = [
@@ -109,8 +109,9 @@ const getDatabase =() => {
         })
         .then( (data)=> {
             console.log("success");
+            localMovies = data;
             $("#database-list").html("")
-            for(let movie of data){
+            for(let movie of localMovies){
                 createMovieCard(movie);
             }
         })
@@ -471,21 +472,11 @@ $(document).on("submit","#updateMovie",function (event){
 // SEARCH FORM ON SUBMIT
 $("#searchForm").on("submit",function (event) {
     event.preventDefault();
-    movieSearch($("#searchField").val()).then((movies)=>{
-        $("#database-list").html("")
-        for(let movie of movies){
-            createMovieCard(movie);
-        }
-    })
+    movieSearch($("#searchField").val())
 })
 // SEARCH FORM SUBMITS ON KEYUP
 $("#searchField").on("keyup",function () {
-    movieSearch($("#searchField").val()).then((movies)=>{
-        $("#database-list").html("")
-        for(let movie of movies){
-            createMovieCard(movie);
-        }
-    })
+    movieSearch($("#searchField").val());
 })
 /** END ONSUBMIT **/
 
@@ -493,40 +484,30 @@ $("#searchField").on("keyup",function () {
 // SEARCH DATABASE
 const movieSearch = (searchInput)=>{
     $("#database-list").html(loader);
-    return fetch(baseurl)
-        .then((response)=> {
-            if (response.ok) {
-                return response.json();
+    let movies = localMovies.filter((movie)=> {
+        if ( $("#radioTitle").is(":checked")) {
+            if (movie.title.toLowerCase().includes(searchInput.toLowerCase())) {
+                return movie;
             }
-            return Promise.reject(response);
-        })
-        .then( (data)=> {
-            let movies = data.filter((movie)=> {
-                if ( $("#radioTitle").is(":checked")) {
-                    if (movie.title.toLowerCase().includes(searchInput.toLowerCase())) {
-                        return movie;
-                    }
+        }
+        if ( $("#radioGenre").is(":checked")){
+            for (let g of movie.genre){
+                if (g.toLowerCase().includes(searchInput.toLowerCase())) {
+                    return movie;
                 }
-                if ( $("#radioGenre").is(":checked")){
-                    for (let g of movie.genre){
-                        if (g.toLowerCase().includes(searchInput.toLowerCase())) {
-                            return movie;
-                        }
-                    }
-                }
-                if ($("#radioRating").is(":checked")){
-                    searchInput = $("#ratingSearchInput").val();
-                    if((movie.rating/2) >= parseFloat(searchInput) ){
-                        return movie;
-                    }
-                }
-            })
-            console.log("success");
-            return movies;
-        })
-        .catch( (error) =>{
-            console.warn("error", error);
-        });
+            }
+        }
+        if ($("#radioRating").is(":checked")){
+            searchInput = $("#ratingSearchInput").val();
+            if((movie.rating/2) >= parseFloat(searchInput) ){
+                return movie;
+            }
+        }
+    })
+    $("#database-list").html("")
+    for(let movie of movies){
+        createMovieCard(movie);
+    }
 }
 
 // SWAP SEARCH INPUT BASED ON RADIO BUTTON
@@ -545,4 +526,39 @@ $("#radioTitle, #radioGenre").click(function () {
 })
 /** END SEARCH FEATURE **/
 
+/** SORT FILTER **/
+
+// TITLE A-Z
+const titleAsc = ()=>{
+    localMovies.sort((a,b) => (a.title > b.title) ? 1 : -1);
+    $("#database-list").empty();
+    for(let movie of localMovies){
+        createMovieCard(movie);
+    }
+}
+
+const titleDesc = () =>{
+    localMovies.sort((a,b) => (a.title < b.title) ? 1 : -1);
+    $("#database-list").empty();
+    for(let movie of localMovies){
+        createMovieCard(movie);
+    }
+}
+
+// YEAR ASC
+const yearAsc = ()=>{
+    localMovies.sort((a,b) => (a.year > b.year) ? 1 : -1);
+    $("#database-list").empty();
+    for(let movie of localMovies){
+        createMovieCard(movie);
+    }
+}
+
+const yearDesc = ()=>{
+    localMovies.sort((a,b) => (a.year < b.year) ? 1 : -1);
+    $("#database-list").empty();
+    for(let movie of localMovies){
+        createMovieCard(movie);
+    }
+}
 getDatabase();
