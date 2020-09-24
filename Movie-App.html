@@ -5,6 +5,8 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- fontawesome-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.7/css/all.css">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
@@ -12,18 +14,83 @@
         body{
             background-color: #0f181d;
         }
+        .card{
+            background-color: #0f181d!important;
+            color: #fdfdfd;
+            border: black solid 1px;
+        }
+        .rating-stars{
+            color: #00a8e1;
+        }
+        .fa-star{
+            color: orange;
+        }
+        .sub-info{
+            color: #798698;
+        }
+        .bg-dark{
+            background-color:#1b2430!important;
+        }
+
+        #search {
+            border-top-right-radius: 32px !important;
+            border-bottom-right-radius: 32px !important;
+            background-color: #fff
+        }
+        #searchBarPre {
+            border-top-left-radius: 32px !important;
+            border-bottom-left-radius: 32px !important;
+            background-color: #fff
+        }
+        #searchField{
+            border-left: hidden!important;
+        }
+        @media only screen and (min-width: 613px){
+            .card{
+                max-width: 18rem!important;
+            }
+        }
     </style>
     <title>A &  R Movies</title>
 </head>
 <body>
-<div class="container">
+<nav class="navbar navbar-dark bg-dark justify-content-between">
+    <a class="navbar-brand">A&R Video</a>
     <!-- Button trigger add movie modal -->
-    <button id="addMovieBtn" type="button" class="btn btn-primary">
-        Add New Movie
+    <button
+            id="addMovieBtn"
+            type="button"
+            class="btn text-warning"
+            data-container="body"
+            data-toggle="popover"
+            data-placement="left"
+            data-content="Click to Add New Movie"
+            data-trigger="hover"
+    >
+        <i class="fas fa-film fa-2x"></i>
     </button>
-
-    <!-- display movie databes-->
-    <div id="database-list" class="container"></div>
+</nav>
+<div class="w-100">
+    <!-- search for movie form   -->
+    <div class="my-5">
+        <form id="searchForm" class="form-inline">
+            <div class="container d-flex justify-content-center">
+                <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                        <span id="searchBarPre" class="input-group-text shadow"></span>
+                    </div>
+                    <input type="text" class="form-control"  id="searchField" name="searchField" placeholder="search database">
+                    <div class="input-group-append">
+                        <button id="search" type="submit" class="input-group-text btn text-primary shadow">
+                            <i class="fa fa-search p-0"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- display movie database-->
+    <div id="database-list" class="row justify-content-center"></div>
 
     <!-- Form Modal -->
     <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalCenterTitle" aria-hidden="true">

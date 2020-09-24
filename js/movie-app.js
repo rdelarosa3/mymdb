@@ -11,7 +11,7 @@ const seedList = [
     "THE GRADUATE",
     "PSYCHO",
     "nightmare on elm street",
-    "jason",
+    "Friday the 13th",
     "kill bill",
     "king kong",
     "taxi driver",
@@ -25,7 +25,7 @@ const seedList = [
     "the sandlot",
     "pulp fiction",
     "forrest gump",
-    "amercian pie",
+    "american pie",
     "fight club",
     "donnie darko",
     "mr. deeds",
@@ -147,22 +147,30 @@ const getMovie = (id) => {
 // DYNAMIC MOVIE CARD CREATED FROM MOVIE DATA
 const createMovieCard = (movie) =>{
     $('#database-list').append(`
-        <div id="${movie.id}" class="card" style="width: 18rem;">
-            <div class="card-header">${movie.title}</div>
+        <div id="${movie.id}" class="card shadow-lg ">
+            <img class="card-img-top" src="${movie.poster}" alt="Card image cap">
             <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Year: ${movie.year}</li>
-                    <li class="list-group-item">Rated: ${movie.rated}</li>
-                    <li class="list-group-item">Released: ${movie.released}</li>
-                    <li class="list-group-item">Runtime: ${movie.runtime}</li>
-                    <li class="list-group-item">Genre: ${movie.genre}</li>
-                    <li class="list-group-item">Director: ${movie.director}</li>
-                    <li class="list-group-item">Actors: ${movie.actors}</li>
-                    <li class="list-group-item">Plot: ${movie.plot}</li>
-                    <li class="list-group-item">Language: ${movie.language}</li>
-                    <li class="list-group-item">Poster: ${movie.poster}</li>
-                    <li class="list-group-item">Ratings: ${movie.rating}</li>
-                </ul>
+                <h5 class="card-title">${movie.title}</h5>
+                <p class="card-text">
+                    ${ movie.plot.length <= 136 ? movie.plot : movie.plot.slice(0,136)+"..." }
+                </p>
+                <div>
+                    <ul class="list-inline">
+                        <li class="list-inline-item movie-ratings">
+                           <i class="fas fa-star"></i> <span class="rating-stars">${(movie.rating/2).toFixed(1)}</span> 
+                        </li>
+                        <li class="list-inline-item sub-info"><i class="far fa-clock"></i> ${movie.runtime} min</li>
+                        <li class="list-inline-item sub-info">${movie.year}</li>
+                        <li class="list-inline-item sub-info"><span class="badge badge-dark">${movie.rated}</span></li>
+                    </ul>
+                    <ul>
+                        <li class="d-none">Released: ${movie.released}</li>
+                        <li class="d-none">Genre: ${movie.genre}</li>
+                        <li class="d-none">Director: ${movie.director}</li>
+                        <li class="d-none">Actors: ${movie.actors}</li>
+                        <li class="d-none">Language: ${movie.language}</li>
+                    </ul>
+                </div>   
             </div>
             <div class="card-footer">
                 <button class="badge badge-pill badge-dark editbtn">Edit</button>
@@ -199,6 +207,16 @@ const loader = `
         </div>
     </div>
 `
+
+$("#addMovieBtn").hover(
+    function () {
+        $(this).popover('toggle');
+    },
+    function () {
+        $(this).popover('toggle');
+    }
+)
+
 /** END HELPER FUNCTIONS**/
 
 /** CRUD - CREATE, READ, UPDATE, DELETE **/
@@ -379,10 +397,13 @@ $("#addMovieBtn").click(function (){
     $("#formModal").modal("toggle");
 })
 
+// GET ENTIRE CARD ON CLICK;
+// const deleteTitle = $(this).parent().siblings();
+
 // DELETE MOVIE BUTTON ON CLICK DISPLAY CONFIRM DELETE
 $(document).on('click','.deletebtn',function(){
-    const id = $(this).parent()[0].id;
-    const deleteTitle = $(this).siblings("div").html();
+    const id = $(this).parent().parent()[0].id;
+    const deleteTitle = $(this).parent().siblings(".card-body").children(".card-title");
     $("#deleteMovieModalLabel").html( deleteTitle);
     $("#deleteMovieModal").modal("toggle");
     // IF USER CLICKS CONFIRM DELETE, DELETE MOVIE
@@ -415,7 +436,7 @@ $(document).on("submit","#createMovie",function (event){
     $("#formModal").modal("toggle");
 });
 
-// EDIT MOVIE FORM ON SUBIT
+// EDIT MOVIE FORM ON SUBMIT
 $(document).on("submit","#updateMovie",function (event){
     event.preventDefault();
     const id = $('input[name="currId"]').val();
