@@ -166,16 +166,16 @@ const createMovieCard = (movie) =>{
                         <li class="list-inline-item sub-info">${movie.year}</li>
                         <li class="list-inline-item sub-info"><span class="badge badge-dark">${movie.rated}</span></li>
                     </ul>
-                    <div class="hidden-list list-group">
-                        <div class="d-none list-group-item"><h5>Released:</h5><span class="sub-info"> ${movie.released}</span></div>
+                    <div class="hidden-list list-group d-none">
+                        <div class="list-group-item"><h5>Released:</h5><span class="sub-info"> ${movie.released}</span></div>
                         <hr>
-                        <div class="d-none list-group-item"><h5>Genre:</h5><span class="sub-info"> ${movie.genre}</span></div>
+                        <div class="list-group-item"><h5>Genre:</h5><span class="sub-info"> ${movie.genre}</span></div>
                         <hr>
-                        <div class="d-none list-group-item"><h5>Director:</h5><span class="sub-info"> ${movie.director}</span></div>
+                        <div class="list-group-item"><h5>Director:</h5><span class="sub-info"> ${movie.director}</span></div>
                         <hr>
-                        <div class="d-none list-group-item"><h5>Actors:</h5><span class="sub-info"> ${movie.actors}</span></div>
+                        <div class="list-group-item"><h5>Actors:</h5><span class="sub-info"> ${movie.actors}</span></div>
                         <hr>
-                        <div class="d-none list-group-item"><h5>Language:</h5><span class="sub-info"> ${movie.language}</span></div>                
+                        <div class="list-group-item"><h5>Language:</h5><span class="sub-info"> ${movie.language}</span></div>                
                     </div>
                 </div>   
             </div>
@@ -437,7 +437,7 @@ $(document).on('click', '.menu-view', function () {
     let info = $(this).html();
     let expandedContent = $('#expandedContent');
     expandedContent.html(info);
-    expandedContent.children(".card-body").children(".sub-content").children(".hidden-list").children().toggleClass("d-none");
+    expandedContent.children(".card-body").children(".sub-content").children(".hidden-list").toggleClass("d-none");
     expandedContent.children(".card-body").children(".card-plot").toggleClass("d-none");
     expandedContent.children(".card-body").children(".card-plot-expanded").toggleClass("d-none");
     $('#expandedModal').modal("toggle");
