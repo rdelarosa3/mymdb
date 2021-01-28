@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-    const baseurl = 'https://copper-cypress-bakery.glitch.me/movies';
+    const baseurl = 'https://hazel-rift-society.glitch.me/movies';
     let localMovies = [];
     /** DATABASE SEED-EMPTY FUNCTIONS **/
     // SEED DATA TO GET FROM OMDB FOR DATABASE
